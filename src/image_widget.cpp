@@ -82,6 +82,13 @@ void ImageWidget::setShowCrosshair(bool show)
     update();
 }
 
+void ImageWidget::setWheelZoomFactors(double normalFactor, double fineFactor, double fastFactor)
+{
+    m_normalZoomFactor = normalFactor;
+    m_fineZoomFactor = fineFactor;
+    m_fastZoomFactor = fastFactor;
+}
+
 bool ImageWidget::saveScreenshot(const QString &filePath)
 {
     if (m_image.isNull())
@@ -161,11 +168,11 @@ void ImageWidget::resizeEvent(QResizeEvent * /*event*/)
 void ImageWidget::wheelEvent(QWheelEvent *event)
 {
     // Determine zoom factor based on modifier keys
-    double factor = 1.2;
+    double factor = m_normalZoomFactor;
     if (event->modifiers() & Qt::ShiftModifier)
-        factor = 1.08;
+        factor = m_fineZoomFactor;
     else if (event->modifiers() & Qt::ControlModifier)
-        factor = 1.5;
+        factor = m_fastZoomFactor;
 
     int delta = event->angleDelta().y();
     if (delta == 0)

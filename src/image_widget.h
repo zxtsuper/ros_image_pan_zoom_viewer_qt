@@ -44,6 +44,8 @@ public:
     void setShowCrosshair(bool show);
     bool showCrosshair() const { return m_showCrosshair; }
 
+    void setWheelZoomFactors(double normalFactor, double fineFactor, double fastFactor);
+
     bool saveScreenshot(const QString &filePath);
 
     double zoomFactor() const { return m_zoom; }
@@ -71,6 +73,9 @@ private:
     QPointF  m_offset;          // top-left corner of the image in widget coords
     ViewMode m_viewMode       = ViewMode::FitToWindow;
     bool     m_showCrosshair  = false;
+    double   m_normalZoomFactor = 1.2;
+    double   m_fineZoomFactor   = 1.08;
+    double   m_fastZoomFactor   = 1.5;
 
     bool     m_dragging       = false;
     QPoint   m_lastMousePos;

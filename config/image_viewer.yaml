@@ -1,0 +1,9 @@
+topic: /camera/image_raw
+window_width: 1024
+window_height: 768
+spin_interval_ms: 30
+depth_pseudo_color: true
+show_crosshair: false
+zoom_factor_normal: 1.2
+zoom_factor_fine: 1.08
+zoom_factor_fast: 1.5
