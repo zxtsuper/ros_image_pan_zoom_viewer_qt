@@ -16,6 +16,7 @@
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc.hpp>
 #include <algorithm>
+#include <cmath>
 
 namespace enc = sensor_msgs::image_encodings;
 
@@ -38,7 +39,9 @@ MainWindow::MainWindow(ros::NodeHandle &nh, QWidget *parent)
     auto zoomParam = [&pnh](const std::string &name, double defaultValue) {
         double value = defaultValue;
         pnh.param(name, value, defaultValue);
-        return value > 1.0 ? value : defaultValue;
+        return std::isfinite(value) && value > 0.0
+                   ? value
+                   : defaultValue;
     };
 
     std::string topicStd = "/camera/image_raw";
@@ -49,7 +52,7 @@ MainWindow::MainWindow(ros::NodeHandle &nh, QWidget *parent)
     pnh.param("depth_pseudo_color", m_depthPseudoColor, true);
 
     bool showCrosshair = false;
-    pnh.param("show_crosshair", showCrosshair, showCrosshair);
+    pnh.param("show_crosshair", showCrosshair, false);
 
     const double normalZoomFactor = zoomParam("zoom_factor_normal", 1.2);
     const double fineZoomFactor = zoomParam("zoom_factor_fine", 1.08);

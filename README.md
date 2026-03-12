@@ -81,9 +81,9 @@ Available parameters:
 | `spin_interval_ms` | `30` | Qt timer interval for `ros::spinOnce()` |
 | `depth_pseudo_color` | `true` | Enable JET pseudo-color for depth images on startup |
 | `show_crosshair` | `false` | Show the crosshair overlay on startup |
-| `zoom_factor_normal` | `1.2` | Mouse wheel zoom factor |
-| `zoom_factor_fine` | `1.08` | Shift + mouse wheel zoom factor |
-| `zoom_factor_fast` | `1.5` | Ctrl + mouse wheel zoom factor |
+| `zoom_factor_normal` | `1.2` | Mouse wheel zoom factor (positive; values below `1.0` reverse wheel direction) |
+| `zoom_factor_fine` | `1.08` | Shift + mouse wheel zoom factor (positive; values below `1.0` reverse wheel direction) |
+| `zoom_factor_fast` | `1.5` | Ctrl + mouse wheel zoom factor (positive; values below `1.0` reverse wheel direction) |
 
 Command-line private parameter overrides still work, for example:
 
