@@ -52,15 +52,43 @@ rosrun ros_image_pan_zoom_viewer_qt image_viewer_qt
 rosrun ros_image_pan_zoom_viewer_qt image_viewer_qt _topic:=/your/image/topic
 ```
 
-Or launch with a launch file:
+Or launch with the packaged config file:
 
-```xml
-<launch>
-  <node pkg="ros_image_pan_zoom_viewer_qt" type="image_viewer_qt"
-        name="image_viewer_qt" output="screen">
-    <param name="topic" value="/camera/image_raw"/>
-  </node>
-</launch>
+```bash
+roslaunch ros_image_pan_zoom_viewer_qt image_viewer.launch
+```
+
+---
+
+## Configuration
+
+The package now ships with `/config/image_viewer.yaml`, which is loaded by
+`launch/image_viewer.launch` as private ROS parameters. You can edit the YAML
+file or point the launch file at a different one:
+
+```bash
+roslaunch ros_image_pan_zoom_viewer_qt image_viewer.launch \
+  config_file:=/absolute/path/to/image_viewer.yaml
+```
+
+Available parameters:
+
+| Parameter | Default | Description |
+|---|---|---|
+| `topic` | `/camera/image_raw` | ROS image topic |
+| `window_width` | `1024` | Initial window width |
+| `window_height` | `768` | Initial window height |
+| `spin_interval_ms` | `30` | Qt timer interval for `ros::spinOnce()` |
+| `depth_pseudo_color` | `true` | Enable JET pseudo-color for depth images on startup |
+| `show_crosshair` | `false` | Show the crosshair overlay on startup |
+| `zoom_factor_normal` | `1.2` | Mouse wheel zoom factor (positive; values below `1.0` reverse wheel direction) |
+| `zoom_factor_fine` | `1.08` | Shift + mouse wheel zoom factor (positive; values below `1.0` reverse wheel direction) |
+| `zoom_factor_fast` | `1.5` | Ctrl + mouse wheel zoom factor (positive; values below `1.0` reverse wheel direction) |
+
+Command-line private parameter overrides still work, for example:
+
+```bash
+rosrun ros_image_pan_zoom_viewer_qt image_viewer_qt _topic:=/your/image/topic
 ```
 
 ---

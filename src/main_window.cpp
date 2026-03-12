@@ -15,6 +15,8 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc.hpp>
+#include <algorithm>
+#include <cmath>
 
 namespace enc = sensor_msgs::image_encodings;
 
@@ -26,17 +28,45 @@ MainWindow::MainWindow(ros::NodeHandle &nh, QWidget *parent)
     , m_nh(nh)
     , m_it(nh)
 {
-    // Resolve topic from private param ~topic (default: /camera/image_raw)
     ros::NodeHandle pnh("~");
+
+    auto positiveIntParam = [&pnh](const std::string &name, int defaultValue) {
+        int value = defaultValue;
+        pnh.param(name, value, defaultValue);
+        return std::max(1, value);
+    };
+
+    auto zoomParam = [&pnh](const std::string &name, double defaultValue) {
+        double value = defaultValue;
+        pnh.param(name, value, defaultValue);
+        return std::isfinite(value) && value > 0.0
+                   ? value
+                   : defaultValue;
+    };
+
     std::string topicStd = "/camera/image_raw";
     pnh.param<std::string>("topic", topicStd, topicStd);
+    const int windowWidth = positiveIntParam("window_width", 1024);
+    const int windowHeight = positiveIntParam("window_height", 768);
+    const int spinIntervalMs = positiveIntParam("spin_interval_ms", 30);
+    pnh.param("depth_pseudo_color", m_depthPseudoColor, true);
+
+    bool showCrosshair = false;
+    pnh.param("show_crosshair", showCrosshair, false);
+
+    const double normalZoomFactor = zoomParam("zoom_factor_normal", 1.2);
+    const double fineZoomFactor = zoomParam("zoom_factor_fine", 1.08);
+    const double fastZoomFactor = zoomParam("zoom_factor_fast", 1.5);
+
     m_topic = QString::fromStdString(topicStd);
 
     setWindowTitle(QString("ROS Image Viewer  [%1]").arg(m_topic));
-    resize(1024, 768);
+    resize(windowWidth, windowHeight);
 
     // Central widget
     m_imageWidget = new ImageWidget(this);
+    m_imageWidget->setWheelZoomFactors(normalZoomFactor, fineZoomFactor, fastZoomFactor);
+    m_imageWidget->setShowCrosshair(showCrosshair);
     setCentralWidget(m_imageWidget);
 
     // Status bar
@@ -48,10 +78,9 @@ MainWindow::MainWindow(ros::NodeHandle &nh, QWidget *parent)
     // Subscribe
     m_sub = m_it.subscribe(topicStd, 1, &MainWindow::imageCallback, this);
 
-    // Spin timer – 30 ms ≈ 33 Hz
     m_spinTimer = new QTimer(this);
     connect(m_spinTimer, &QTimer::timeout, this, &MainWindow::spinOnce);
-    m_spinTimer->start(30);
+    m_spinTimer->start(spinIntervalMs);
 }
 
 // ---------------------------------------------------------------------------
@@ -86,6 +115,7 @@ void MainWindow::createMenus()
     QAction *crosshairAct = new QAction("Toggle &crosshair", this);
     crosshairAct->setShortcut(QKeySequence("C"));
     crosshairAct->setCheckable(true);
+    crosshairAct->setChecked(m_imageWidget->showCrosshair());
     connect(crosshairAct, &QAction::toggled, m_imageWidget, &ImageWidget::setShowCrosshair);
     viewMenu->addAction(crosshairAct);
 

@@ -62,3 +62,7 @@ target_link_libraries(image_viewer_qt
 install(TARGETS image_viewer_qt
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+install(DIRECTORY config launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

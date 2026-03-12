@@ -1,0 +1,10 @@
+<launch>
+  <arg name="config_file" default="$(find ros_image_pan_zoom_viewer_qt)/config/image_viewer.yaml"/>
+
+  <node pkg="ros_image_pan_zoom_viewer_qt"
+        type="image_viewer_qt"
+        name="image_viewer_qt"
+        output="screen">
+    <rosparam command="load" file="$(arg config_file)"/>
+  </node>
+</launch>
